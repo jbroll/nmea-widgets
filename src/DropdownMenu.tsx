@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'preact/hooks';
+import { useState, useRef, useEffect } from 'react';
 import { ChevronDown } from './ChevronIcons';
 
 export interface MenuItem {
@@ -44,16 +44,16 @@ export const DropdownMenu = ({
     if (item.type === 'checkbox') {
       return (
         <label 
-          class="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
+          className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
           style={{ paddingLeft }}
         >
           <input
             type="checkbox"
             checked={item.checked}
             onChange={(e) => onChange(item.id, (e.target as HTMLInputElement).checked)}
-            class="mr-2"
+            className="mr-2"
           />
-          <span class="text-sm">{item.label}</span>
+          <span className="text-sm">{item.label}</span>
         </label>
       );
     }
@@ -61,7 +61,7 @@ export const DropdownMenu = ({
     return (
       <div>
         <div 
-          class="px-4 py-2 font-semibold text-sm text-gray-700"
+          className="px-4 py-2 font-semibold text-sm text-gray-700"
           style={{ paddingLeft }}
         >
           {item.label}
@@ -75,21 +75,21 @@ export const DropdownMenu = ({
 
   return (
     <div 
-      class={`relative inline-block text-left ${className}`} 
+      className={`relative inline-block text-left ${className}`} 
       ref={menuRef}
       title={tooltip}
     >
       <div
         onClick={() => setIsOpen(!isOpen)}
-        class="inline-flex items-center justify-center p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
+        className="inline-flex items-center justify-center p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
       >
-        {title && <span class="mr-2 text-sm">{title}</span>}
+        {title && <span className="mr-2 text-sm">{title}</span>}
         <ChevronDown />
       </div>
 
       {isOpen && (
-        <div class="absolute left-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
-          <div class="py-1">
+        <div className="absolute left-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
+          <div className="py-1">
             {items.map((item) => (
               <MenuItem key={item.id} item={item} />
             ))}

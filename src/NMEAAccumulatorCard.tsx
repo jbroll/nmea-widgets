@@ -1,4 +1,4 @@
-import { useState } from 'preact/hooks';
+import { useState } from 'react';
 import { ChevronDown, ChevronRight } from './ChevronIcons';
 import { CopyToClipboard } from './CopyToClipboard';
 import type { ProcessedData } from './nmea-types';

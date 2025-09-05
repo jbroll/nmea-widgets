@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'preact/hooks';
+import { useState, useEffect, useCallback } from 'react';
 import { ConnectionInterface, ConnectionType } from './ConnectionInterface';
 import { ConnectionFactory } from './ConnectionFactory';
 import { NMEAAccumulator } from './NMEAAccumulator';

@@ -1,13 +1,11 @@
 import { defineConfig } from 'vite';
-import preact from '@preact/preset-vite';
+import react from '@vitejs/plugin-react';
 import dts from 'vite-plugin-dts';
 import { resolve } from 'path';
 
 export default defineConfig(({ command, mode }) => ({
   plugins: [
-    preact({
-      debug: mode !== 'production'
-    }),
+    react(),
     dts({
       insertTypesEntry: true,
     })
@@ -26,16 +24,16 @@ export default defineConfig(({ command, mode }) => ({
     minify: mode === 'production',
     rollupOptions: {
       external: [
-        'preact',
-        'preact/hooks',
-        'preact/jsx-runtime',
+        'react',
+        'react-dom',
+        'react/jsx-runtime',
         'tailwindcss'
       ],
       output: {
         globals: {
-          preact: 'Preact',
-          'preact/hooks': 'PreactHooks',
-          'preact/jsx-runtime': 'PreactJSXRuntime',
+          react: 'React',
+          'react-dom': 'ReactDOM',
+          'react/jsx-runtime': 'ReactJSXRuntime',
           tailwindcss: 'Tailwindcss'
         }
       }

@@ -1,5 +1,4 @@
-import { useState, useMemo, useCallback, useEffect } from "preact/hooks";
-import { Fragment } from "preact/jsx-runtime";
+import { useState, useMemo, useCallback, useEffect, Fragment } from "react";
 import { ProcessedData } from "./nmea-types";
 
 // Constants moved to separate file or module to prevent recreation
@@ -155,15 +154,15 @@ export const SatellitePlot = ({ data }: { data: ProcessedData }) => {
   }, [hoveredSat, data?.satellites?.visible]);
 
   return (
-    <div class="relative bg-white rounded-lg shadow">
+    <div className="relative bg-white rounded-lg shadow">
       {/* Filter buttons */}
-      <div class="absolute top-4 left-4 z-10">
-        <h3 class="text-lg font-semibold">Satellite View</h3>
-        <div class="mt-2">
-          <div class="flex space-x-2">
+      <div className="absolute top-4 left-4 z-10">
+        <h3 className="text-lg font-semibold">Satellite View</h3>
+        <div className="mt-2">
+          <div className="flex space-x-2">
             <button
               onClick={useCallback(() => setVisibilityFilter('in-use'), [])}
-              class={`px-2 py-1 text-sm rounded ${
+              className={`px-2 py-1 text-sm rounded ${
                 visibilityFilter === 'in-use'
                   ? 'bg-blue-500 text-white'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -173,7 +172,7 @@ export const SatellitePlot = ({ data }: { data: ProcessedData }) => {
             </button>
             <button
               onClick={useCallback(() => setVisibilityFilter('all'), [])}
-              class={`px-2 py-1 text-sm rounded ${
+              className={`px-2 py-1 text-sm rounded ${
                 visibilityFilter === 'all'
                   ? 'bg-blue-500 text-white'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -185,10 +184,10 @@ export const SatellitePlot = ({ data }: { data: ProcessedData }) => {
         </div>
       </div>
       
-      <div class="p-2">
+      <div className="p-2">
         <svg
           viewBox={`0 0 ${VIEW_BOX_SIZE} ${VIEW_BOX_SIZE}`}
-          class="w-full h-full"
+          className="w-full h-full"
         >
           {ELEVATION_RINGS.map((elevation, i) => (
             <Fragment key={elevation}>
@@ -198,12 +197,12 @@ export const SatellitePlot = ({ data }: { data: ProcessedData }) => {
                 r={RADIUS * (1 - elevation / 90)}
                 fill="none"
                 stroke="rgb(209 213 219)"
-                stroke-width="1"
+                strokeWidth="1"
               />
               <text
                 x={STATIC_COORDINATES.elevationCoords[i].x + 5}
                 y={STATIC_COORDINATES.elevationCoords[i].y}
-                class="text-xs fill-gray-400"
+                className="text-xs fill-gray-400"
               >
                 {elevation}°
               </text>
@@ -218,14 +217,14 @@ export const SatellitePlot = ({ data }: { data: ProcessedData }) => {
                 x2={line.end.x}
                 y2={line.end.y}
                 stroke="rgb(209 213 219)"
-                stroke-width="1"
+                strokeWidth="1"
               />
               <text
                 x={text.x}
                 y={text.y}
-                text-anchor="middle"
-                dominant-baseline="middle"
-                class="text-sm fill-gray-500"
+                textAnchor="middle"
+                dominantBaseline="middle"
+                className="text-sm fill-gray-500"
               >
                 {DIRECTIONS[i]}
               </text>
@@ -242,7 +241,7 @@ export const SatellitePlot = ({ data }: { data: ProcessedData }) => {
                 key={sat.prnNumber}
                 onMouseEnter={() => handleMouseEnter(sat.prnNumber)}
                 onMouseLeave={handleMouseLeave}
-                class="cursor-pointer"
+                className="cursor-pointer"
               >
                 <circle
                   cx={pos.x}
@@ -250,7 +249,7 @@ export const SatellitePlot = ({ data }: { data: ProcessedData }) => {
                   r="5"
                   fill={isInUse ? getSNRColor(sat.SNRdB) : SIGNAL_COLORS.UNKNOWN}
                   stroke="white"
-                  stroke-width="0"
+                  strokeWidth="0"
                 />
                 <circle
                   cx={pos.x}
@@ -265,8 +264,8 @@ export const SatellitePlot = ({ data }: { data: ProcessedData }) => {
 
         {/* Hover tooltip */}
         {hoveredSatellite && (
-          <div class="absolute top-0 right-2 bg-white p-0 bg-opacity-0 rounded shadow-sm">
-            <div class="text-xs">
+          <div className="absolute top-0 right-2 bg-white p-0 bg-opacity-0 rounded shadow-sm">
+            <div className="text-xs">
               <div>PRN: {hoveredSatellite.prnNumber}</div>
               <div>System: {hoveredSatellite.constellation}</div>
               <div>Elevation: {hoveredSatellite.elevationDegrees.toFixed(1)}°</div>
@@ -277,28 +276,28 @@ export const SatellitePlot = ({ data }: { data: ProcessedData }) => {
         )}
 
         {/* Signal strength legend */}
-        <div class="absolute bottom-4 left-4 bg-white bg-opacity-0 p-0 rounded shadow-sm text-xs">
-        <div class="text-center text-sm">Signal</div>
+        <div className="absolute bottom-4 left-4 bg-white bg-opacity-0 p-0 rounded shadow-sm text-xs">
+        <div className="text-center text-sm">Signal</div>
           {SIGNAL_LEGEND.map(({ label, color }) => (
-            <div key={label} class="flex items-center">
-            <span style={`background-color: ${color}`} class="w-3 h-3 rounded-full mr-1" />
+            <div key={label} className="flex items-center">
+            <span style={{backgroundColor: color}} className="w-3 h-3 rounded-full mr-1" />
               {label}
             </div>
           ))}
         </div>
 
         {/* Constellation legend w/toggles */}
-        <div class="absolute bottom-4 right-4 bg-white bg-opacity-0 p-0 rounded shadow-sm text-xs">
-          <div class="text-center text-sm">System</div>
+        <div className="absolute bottom-4 right-4 bg-white bg-opacity-0 p-0 rounded shadow-sm text-xs">
+          <div className="text-center text-sm">System</div>
           {(Object.entries(CONSTELLATION_NAMES) as [keyof typeof CONSTELLATION_NAMES, string][]).map(([id, label]) => (
-            <label key={id} class="flex items-center cursor-pointer hover:bg-gray-50 p-0.5 rounded">
+            <label key={id} className="flex items-center cursor-pointer hover:bg-gray-50 p-0.5 rounded">
               <input
                 type="checkbox"
                 checked={enabledConstellations.has(id)}
                 onChange={() => handleToggleConstellation(id)}
-                class="mr-1"
+                className="mr-1"
               />
-              <span style={`background-color: ${CONSTELLATION_COLORS[id]}`} class="w-3 h-3 rounded-full mx-1" />
+              <span style={{backgroundColor: CONSTELLATION_COLORS[id]}} className="w-3 h-3 rounded-full mx-1" />
               {label}
             </label>
           ))}

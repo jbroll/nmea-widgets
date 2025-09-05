@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'preact/hooks';
+import { useState, useRef, useEffect } from 'react';
 import { useNMEA } from './useNMEA';
 import { ConnectionFactory } from './ConnectionFactory';
 import { ConnectionType } from './ConnectionInterface';
@@ -90,9 +90,9 @@ export const NMEAButton = ({
   };
 
   return (
-    <div class="relative" ref={menuRef}>
+    <div className="relative" ref={menuRef}>
       <button 
-        class={getButtonClass()}
+        className={getButtonClass()}
         onClick={() => setIsOpen(!isOpen)}
         title={error || undefined}
       >
@@ -100,14 +100,14 @@ export const NMEAButton = ({
       </button>
       
       {isOpen && (
-        <div class="absolute right-0 mt-2 py-2 w-48 bg-white rounded-md shadow-xl z-50">
+        <div className="absolute right-0 mt-2 py-2 w-48 bg-white rounded-md shadow-xl z-50">
           {connectionTypes.map(type => 
             isConnected && type.id !== connection?.id ? null : (
             <button
               key={type.id}
               onClick={() => handleConnect(type)}
               disabled={!type.isSupported}
-              class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 disabled:text-gray-400 disabled:hover:bg-white disabled:cursor-not-allowed"
+              className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 disabled:text-gray-400 disabled:hover:bg-white disabled:cursor-not-allowed"
             >
               {isConnected ? `Disconnect ${type.label}` : type.label}
             </button>
@@ -115,13 +115,13 @@ export const NMEAButton = ({
           
           {detailsLabel && onDetailsClick && (
             <>
-              <div class="border-t my-2"></div>
+              <div className="border-t my-2"></div>
               <button 
                 onClick={() => {
                   setIsOpen(false);
                   onDetailsClick();
                 }}
-                class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
               >
                 {detailsLabel}
               </button>

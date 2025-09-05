@@ -1,16 +1,16 @@
 import { defineConfig } from 'vite'
-import preact from '@preact/preset-vite'
+import react from '@vitejs/plugin-react'
 
 const BASE_PATH = '/nmea-widgets/'
 
 export default defineConfig(({ command }) => ({
-  plugins: [preact()],
+  plugins: [react()],
   base: command === 'serve' ? '/' : BASE_PATH,
   build: {
     sourcemap: true
   },
   resolve: {
-    dedupe: ['preact', 'preact/hooks', 'preact/jsx-runtime']
+    dedupe: ['react', 'react-dom']
   },
   server: {
     port: 3000

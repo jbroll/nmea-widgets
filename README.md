@@ -2,7 +2,7 @@
 
 <img align="right" src="images/NMEADisplay.png" alt="NMEA Data Display" width="400">
 
-A modern React/Preact component library for visualizing NMEA GPS data in real-time using Web Serial, Web Bluetooth, and Geolocation APIs. Built with TypeScript and Tailwind CSS.
+A modern React component library for visualizing NMEA GPS data in real-time using Web Serial, Web Bluetooth, and Geolocation APIs. Built with TypeScript and Tailwind CSS.
 
 [Try the nmea-demo!](https://jbroll.github.io/nmea-widgets/)
 
@@ -51,7 +51,7 @@ npm install @jbroll/nmea-widgets
 This package has peer dependencies that you'll need to install in your project:
 
 ```bash
-npm install preact tailwindcss
+npm install react react-dom tailwindcss
 ```
 
 ## Setup
@@ -310,7 +310,7 @@ npm run dev
 Contributions are welcome! Please feel free to submit a Pull Request.
 
 The project uses:
-- Preact for UI components
+- React for UI components
 - TypeScript for type safety
 - Tailwind CSS for styling
 - Vite for building and development
