@@ -63,7 +63,7 @@ NMEA sentences are filtered based on type (GGA, GST, GSA, GSV) and constellation
 ### Peer Dependencies (required)
 - `react ^18.0.0` - UI framework
 - `react-dom ^18.0.0` - React DOM rendering
-- `tailwindcss ^3.4.0` - Styling
+- `tailwindcss ^4.1.10` - Styling
 
 ### Key Dependencies
 - `@jbroll/nmea-simple ^3.3.4` - NMEA sentence parsing

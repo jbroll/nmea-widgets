@@ -264,7 +264,7 @@ export const SatellitePlot = ({ data }: { data: ProcessedData }) => {
 
         {/* Hover tooltip */}
         {hoveredSatellite && (
-          <div className="absolute top-0 right-2 bg-white p-0 bg-opacity-0 rounded shadow-sm">
+          <div className="absolute top-0 right-2 bg-white/0 p-0 rounded shadow-sm">
             <div className="text-xs">
               <div>PRN: {hoveredSatellite.prnNumber}</div>
               <div>System: {hoveredSatellite.constellation}</div>
@@ -276,7 +276,7 @@ export const SatellitePlot = ({ data }: { data: ProcessedData }) => {
         )}
 
         {/* Signal strength legend */}
-        <div className="absolute bottom-4 left-4 bg-white bg-opacity-0 p-0 rounded shadow-sm text-xs">
+        <div className="absolute bottom-4 left-4 bg-white/0 p-0 rounded shadow-sm text-xs">
         <div className="text-center text-sm">Signal</div>
           {SIGNAL_LEGEND.map(({ label, color }) => (
             <div key={label} className="flex items-center">
@@ -287,7 +287,7 @@ export const SatellitePlot = ({ data }: { data: ProcessedData }) => {
         </div>
 
         {/* Constellation legend w/toggles */}
-        <div className="absolute bottom-4 right-4 bg-white bg-opacity-0 p-0 rounded shadow-sm text-xs">
+        <div className="absolute bottom-4 right-4 bg-white/0 p-0 rounded shadow-sm text-xs">
           <div className="text-center text-sm">System</div>
           {(Object.entries(CONSTELLATION_NAMES) as [keyof typeof CONSTELLATION_NAMES, string][]).map(([id, label]) => (
             <label key={id} className="flex items-center cursor-pointer hover:bg-gray-50 p-0.5 rounded">
