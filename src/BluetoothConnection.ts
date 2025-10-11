@@ -1,13 +1,13 @@
 /// <reference types="web-bluetooth" />
 
-import { ConnectionInterface } from './ConnectionInterface';
+import type { ConnectionInterface } from './ConnectionInterface';
 
 // Common UART/Serial service UUIDs
 const UART_SERVICES = [
   '6e400001-b5a3-f393-e0a9-e50e24dcca9e', // Nordic UART
   '0000fefb-0000-1000-8000-00805f9b34fb', // Legacy UART
   '49535343-fe7d-4ae5-8fa9-9fafd205e455', // Microchip UART
-  '0000ffe0-0000-1000-8000-00805f9b34fb'  // HM-10 UART
+  '0000ffe0-0000-1000-8000-00805f9b34fb', // HM-10 UART
 ];
 
 // Common TX characteristic UUIDs (device -> phone)
@@ -15,7 +15,7 @@ const TX_CHARACTERISTICS = [
   '6e400003-b5a3-f393-e0a9-e50e24dcca9e', // Nordic TX
   '0000fefb-0000-1000-8000-00805f9b34fb', // Legacy TX
   '49535343-1e4d-4bd9-ba61-23c647249616', // Microchip TX
-  '0000ffe1-0000-1000-8000-00805f9b34fb'  // HM-10 TX
+  '0000ffe1-0000-1000-8000-00805f9b34fb', // HM-10 TX
 ];
 
 // Common RX characteristic UUIDs (phone -> device)
@@ -23,7 +23,7 @@ const RX_CHARACTERISTICS = [
   '6e400002-b5a3-f393-e0a9-e50e24dcca9e', // Nordic RX
   '0000fefb-0000-1000-8000-00805f9b34fb', // Legacy RX
   '49535343-8841-43f4-a8d4-ecbe34729bb3', // Microchip RX
-  '0000ffe1-0000-1000-8000-00805f9b34fb'  // HM-10 RX
+  '0000ffe1-0000-1000-8000-00805f9b34fb', // HM-10 RX
 ];
 
 export class BluetoothConnection implements ConnectionInterface {
@@ -34,7 +34,10 @@ export class BluetoothConnection implements ConnectionInterface {
   private decoder = new TextDecoder();
   private buffer = '';
 
-  static supported: boolean = 'bluetooth' in navigator && 'requestDevice' in (navigator as any).bluetooth;
+  static supported: boolean =
+    'bluetooth' in navigator &&
+    'requestDevice' in
+      (navigator as Navigator & { bluetooth: { requestDevice: unknown } }).bluetooth;
   static Id = 'bluetooth';
 
   id: string = BluetoothConnection.Id;
@@ -49,11 +52,20 @@ export class BluetoothConnection implements ConnectionInterface {
     }
 
     try {
-      const device = await (navigator as any).bluetooth.requestDevice({
+      const device = await (
+        navigator as Navigator & {
+          bluetooth: {
+            requestDevice: (options: {
+              filters: { namePrefix: string }[];
+              optionalServices: string[];
+            }) => Promise<BluetoothDevice>;
+          };
+        }
+      ).bluetooth.requestDevice({
         filters: [
-          { namePrefix: 'Express' },  // Adjust this prefix based on your device name
+          { namePrefix: 'Express' }, // Adjust this prefix based on your device name
         ],
-        optionalServices: [...UART_SERVICES]
+        optionalServices: [...UART_SERVICES],
       });
 
       //console.log('Attempting to connect to device:', device.name);
@@ -73,16 +85,14 @@ export class BluetoothConnection implements ConnectionInterface {
         try {
           service = await gatt.getPrimaryService(serviceId);
           if (service) break;
-        } catch (e) {
-          continue;
-        }
+        } catch (_e) {}
       }
 
       if (!service) {
         // If no standard service found, try to discover services
         const services = await gatt.getPrimaryServices();
         if (services.length > 0) {
-          service = services[0]; // Use first available service
+          service = services[0] ?? null; // Use first available service
         } else {
           throw new Error('No compatible services found');
         }
@@ -93,8 +103,8 @@ export class BluetoothConnection implements ConnectionInterface {
       }
 
       // Try to find TX characteristic
-      //console.log('Available characteristics:', 
-      //  (await service.getCharacteristics()).map((c: BluetoothRemoteGATTCharacteristic) => 
+      //console.log('Available characteristics:',
+      //  (await service.getCharacteristics()).map((c: BluetoothRemoteGATTCharacteristic) =>
       //    `${c.uuid} (${Object.entries(c.properties).filter(([_k,v]) => v).map(([k]) => k).join(', ')})`
       //  )
       //);
@@ -107,17 +117,14 @@ export class BluetoothConnection implements ConnectionInterface {
             //console.log('Found TX characteristic:', charId);
             break;
           }
-        } catch (e) {
-          //console.log('Failed to get TX characteristic:', charId, e);
-          continue;
-        }
+        } catch (_e) {}
       }
 
       // If no standard TX characteristic found, try to discover characteristics
       if (!this.txCharacteristic) {
         const characteristics = await service.getCharacteristics();
         //console.log('Looking for characteristic with notify property');
-        this.txCharacteristic = characteristics.find(char => char.properties.notify) || null;
+        this.txCharacteristic = characteristics.find((char) => char.properties.notify) || null;
         if (this.txCharacteristic) {
           //console.log('Found notify characteristic:', this.txCharacteristic.uuid);
         }
@@ -140,7 +147,7 @@ export class BluetoothConnection implements ConnectionInterface {
           const lines = this.buffer.split(/\r?\n/);
           this.buffer = lines.pop() || ''; // Keep partial line in buffer
 
-          lines.forEach(line => {
+          lines.forEach((line) => {
             const trimmed = line.trim();
             if (trimmed.length > 0 && this.messageCallback) {
               this.messageCallback(trimmed);
@@ -154,23 +161,21 @@ export class BluetoothConnection implements ConnectionInterface {
         try {
           this.rxCharacteristic = await service.getCharacteristic(charId);
           if (this.rxCharacteristic) break;
-        } catch (e) {
-          continue;
-        }
+        } catch (_e) {}
       }
 
       // If no standard RX characteristic found, try to discover characteristics
       if (!this.rxCharacteristic) {
         const characteristics = await service.getCharacteristics();
         // Look for a characteristic with write property
-        this.rxCharacteristic = characteristics.find(char => 
-          char.properties.write || char.properties.writeWithoutResponse
-        ) || null;
+        this.rxCharacteristic =
+          characteristics.find(
+            (char) => char.properties.write || char.properties.writeWithoutResponse,
+          ) || null;
       }
 
       this.device = device;
       device.addEventListener('gattserverdisconnected', () => this.cleanup());
-
     } catch (error) {
       await this.cleanup();
       throw error;
@@ -201,7 +206,7 @@ export class BluetoothConnection implements ConnectionInterface {
         console.error('Error disconnecting GATT:', e);
       }
     }
-    
+
     this.device = null;
   }
 
@@ -212,7 +217,7 @@ export class BluetoothConnection implements ConnectionInterface {
 
     try {
       const encoder = new TextEncoder();
-      await this.rxCharacteristic.writeValue(encoder.encode(command + '\r\n'));
+      await this.rxCharacteristic.writeValue(encoder.encode(`${command}\r\n`));
     } catch (error) {
       console.error('Error sending command:', error);
       throw error;

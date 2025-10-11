@@ -1,4 +1,4 @@
-import { ConnectionInterface } from './ConnectionInterface';
+import type { ConnectionInterface } from './ConnectionInterface';
 
 export class SerialConnection implements ConnectionInterface {
   private port: SerialPort | null = null;
@@ -30,7 +30,7 @@ export class SerialConnection implements ConnectionInterface {
         dataBits: 8,
         stopBits: 1,
         parity: 'none',
-        flowControl: 'none'
+        flowControl: 'none',
       });
 
       if (!this.port.readable) {
@@ -46,7 +46,7 @@ export class SerialConnection implements ConnectionInterface {
           buffer += chunk;
           const lines = buffer.split('\r\n');
           buffer = lines.pop() || '';
-          
+
           for (const line of lines) {
             const trimmed = line.trim();
             if (trimmed.length > 0) {
@@ -61,28 +61,29 @@ export class SerialConnection implements ConnectionInterface {
               controller.enqueue(trimmed);
             }
           }
-        }
+        },
       });
 
       this.isReading = true;
-      
+
       this.port.readable
         .pipeThrough(decoder)
         .pipeThrough(lineBreakTransformer)
-        .pipeTo(new WritableStream({
-          write: (line: string) => {
-            if (this.isReading && this.messageCallback) {
-              this.messageCallback(line);
-            }
-          },
-          abort: (reason) => {
-            console.error(new Error(`Stream aborted: ${reason}`));
-          }
-        }))
-        .catch(error => {
+        .pipeTo(
+          new WritableStream({
+            write: (line: string) => {
+              if (this.isReading && this.messageCallback) {
+                this.messageCallback(line);
+              }
+            },
+            abort: (reason) => {
+              console.error(new Error(`Stream aborted: ${reason}`));
+            },
+          }),
+        )
+        .catch((error) => {
           console.error(error instanceof Error ? error : new Error('Stream error'));
         });
-
     } catch (error) {
       await this.cleanup();
       throw error;
@@ -101,16 +102,16 @@ export class SerialConnection implements ConnectionInterface {
       if (this.port.readable) {
         try {
           await this.port.readable.cancel();
-        } catch (e) {
+        } catch (_e) {
           // console.error(`Readable cancel failed: ${e}`);
         }
       }
-      
+
       // Then try to abort any writes
       if (this.port.writable) {
         try {
           await this.port.writable.abort();
-        } catch (e) {
+        } catch (_e) {
           // console.error(`Writable abort failed: ${e}`);
         }
       }
@@ -118,14 +119,14 @@ export class SerialConnection implements ConnectionInterface {
       // Try to force forget the port
       try {
         await this.port.forget();
-      } catch (e) {
+      } catch (_e) {
         // console.error(`Port forget failed: ${e}`);
       }
 
       // Finally try to close the port
       try {
         await this.port.close();
-      } catch (e) {
+      } catch (_e) {
         // console.error(`Port close failed: ${e}`);
       }
 
@@ -146,7 +147,7 @@ export class SerialConnection implements ConnectionInterface {
     try {
       const encoder = new TextEncoder();
       const writer = this.port.writable.getWriter();
-      await writer.write(encoder.encode(command + '\r\n'));
+      await writer.write(encoder.encode(`${command}\r\n`));
       writer.releaseLock();
     } catch (error) {
       console.error(error instanceof Error ? error : new Error('Write error'));

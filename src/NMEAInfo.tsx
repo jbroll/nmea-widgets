@@ -1,5 +1,5 @@
 import { CopyToClipboard } from './CopyToClipboard';
-import { ProcessedData } from './nmea-types';
+import type { ProcessedData } from './nmea-types';
 
 export const NMEAInfo = ({ data }: { data: ProcessedData }) => {
   if (!data.position) {
@@ -10,50 +10,46 @@ export const NMEAInfo = ({ data }: { data: ProcessedData }) => {
     );
   }
 
-  const accuracy = data.errorStats ? 
-    Math.sqrt(Math.pow(data.errorStats.latitudeError, 2) + Math.pow(data.errorStats.longitudeError, 2)) : 
-    null;
+  // Store position in const to avoid non-null assertions
+  const position = data.position;
+
+  const accuracy = data.errorStats
+    ? Math.sqrt(data.errorStats.latitudeError ** 2 + data.errorStats.longitudeError ** 2)
+    : null;
 
   const satellitesInUse = data.satellites.inUse.length;
 
   const getPositionText = () => {
-    return `${data.position!.latitude.toFixed(6)},${data.position!.longitude.toFixed(6)}`;
+    return `${position.latitude.toFixed(6)},${position.longitude.toFixed(6)}`;
   };
 
   return (
     <div className="p-2 bg-white rounded-lg shadow">
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-lg font-semibold">Position Information</h3>
-        <CopyToClipboard
-          getData={getPositionText}
-          title="Copy coordinates to clipboard"
-        />
+        <CopyToClipboard getData={getPositionText} title="Copy coordinates to clipboard" />
       </div>
-      
+
       <div className="grid grid-cols-2 gap-4">
         {/* Row 1 */}
         <div>
-          <label className="block text-xs text-gray-500 font-medium mb-1">Latitude</label>
-          <div className="p-2 bg-gray-50 rounded font-mono">
-            {data.position.latitude.toFixed(6)}°
-          </div>
+          <div className="block text-xs text-gray-500 font-medium mb-1">Latitude</div>
+          <div className="p-2 bg-gray-50 rounded font-mono">{position.latitude.toFixed(6)}°</div>
         </div>
         <div>
-          <label className="block text-xs text-gray-500 font-medium mb-1">Longitude</label>
-          <div className="p-2 bg-gray-50 rounded font-mono">
-            {data.position.longitude.toFixed(6)}°
-          </div>
+          <div className="block text-xs text-gray-500 font-medium mb-1">Longitude</div>
+          <div className="p-2 bg-gray-50 rounded font-mono">{position.longitude.toFixed(6)}°</div>
         </div>
 
         {/* Row 2 */}
         <div>
-          <label className="block text-xs text-gray-500 font-medium mb-1">Altitude</label>
+          <div className="block text-xs text-gray-500 font-medium mb-1">Altitude</div>
           <div className="p-2 bg-gray-50 rounded font-mono">
-            {data.position.altitudeMeters.toFixed(1)} m
+            {position.altitudeMeters.toFixed(1)} m
           </div>
         </div>
         <div>
-          <label className="block text-xs text-gray-500 font-medium mb-1">Accuracy</label>
+          <div className="block text-xs text-gray-500 font-medium mb-1">Accuracy</div>
           <div className="p-2 bg-gray-50 rounded font-mono">
             {accuracy ? `${accuracy.toFixed(2)} m` : 'N/A'}
           </div>
@@ -61,16 +57,12 @@ export const NMEAInfo = ({ data }: { data: ProcessedData }) => {
 
         {/* Row 3 */}
         <div>
-          <label className="block text-xs text-gray-500 font-medium mb-1">Fix Type</label>
-          <div className="p-2 bg-gray-50 rounded font-mono">
-            {data.position.fixType}
-          </div>
+          <div className="block text-xs text-gray-500 font-medium mb-1">Fix Type</div>
+          <div className="p-2 bg-gray-50 rounded font-mono">{position.fixType}</div>
         </div>
         <div>
-          <label className="block text-xs text-gray-500 font-medium mb-1">Satellites</label>
-          <div className="p-2 bg-gray-50 rounded font-mono">
-            {satellitesInUse}
-          </div>
+          <div className="block text-xs text-gray-500 font-medium mb-1">Satellites</div>
+          <div className="p-2 bg-gray-50 rounded font-mono">{satellitesInUse}</div>
         </div>
       </div>
     </div>

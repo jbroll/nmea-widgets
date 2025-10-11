@@ -1,4 +1,3 @@
-
 export interface Satellite {
   prnNumber: number;
   elevationDegrees: number;
@@ -25,4 +24,3 @@ export interface ProcessedData {
     inUse: number[];
   };
 }
-

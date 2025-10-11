@@ -1,5 +1,5 @@
-import { useState, useMemo, useCallback, useEffect, Fragment } from "react";
-import { ProcessedData } from "./nmea-types";
+import { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
+import type { ProcessedData } from './nmea-types';
 
 // Constants moved to separate file or module to prevent recreation
 const SIGNAL_COLORS = {
@@ -7,7 +7,7 @@ const SIGNAL_COLORS = {
   GOOD: '#0284C7',
   MODERATE: '#F59E0B',
   WEAK: '#DC2626',
-  UNKNOWN: '#6B7280'
+  UNKNOWN: '#6B7280',
 } as const;
 
 // Signal strength legend configuration
@@ -15,7 +15,7 @@ const SIGNAL_LEGEND = [
   { label: '≥45 dB', color: SIGNAL_COLORS.STRONG },
   { label: '≥35 dB', color: SIGNAL_COLORS.GOOD },
   { label: '≥25 dB', color: SIGNAL_COLORS.MODERATE },
-  { label: '<25 dB', color: SIGNAL_COLORS.WEAK }
+  { label: '<25 dB', color: SIGNAL_COLORS.WEAK },
 ] as const;
 
 const CONSTELLATION_COLORS = {
@@ -23,7 +23,7 @@ const CONSTELLATION_COLORS = {
   GL: '#B91C1C',
   GA: '#1D4ED8',
   GB: '#7C3AED',
-  DEFAULT: '#374151'
+  DEFAULT: '#374151',
 } as const;
 
 const CONSTELLATION_NAMES = {
@@ -43,8 +43,10 @@ const getSNRColor = (snr: number | null) => {
 };
 
 const getConstellationColor = (constellation: string) => {
-  return CONSTELLATION_COLORS[constellation.substring(0, 2) as keyof typeof CONSTELLATION_COLORS] 
-    || CONSTELLATION_COLORS.DEFAULT;
+  return (
+    CONSTELLATION_COLORS[constellation.substring(0, 2) as keyof typeof CONSTELLATION_COLORS] ||
+    CONSTELLATION_COLORS.DEFAULT
+  );
 };
 
 // Plot constants
@@ -57,42 +59,42 @@ const DIRECTIONS = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
 
 // Pre-calculate static coordinates
 const STATIC_COORDINATES = {
-  elevationCoords: ELEVATION_RINGS.map(elevation => {
+  elevationCoords: ELEVATION_RINGS.map((elevation) => {
     const r = RADIUS * (1 - elevation / 90);
-    const theta = (26 - 90) * Math.PI / 180;
+    const theta = ((26 - 90) * Math.PI) / 180;
     return {
       x: CENTER + r * Math.cos(theta),
-      y: CENTER + r * Math.sin(theta)
+      y: CENTER + r * Math.sin(theta),
     };
   }),
-  azimuthCoords: AZIMUTH_LINES.map(azimuth => {
-    const theta = (azimuth - 90) * Math.PI / 180;
+  azimuthCoords: AZIMUTH_LINES.map((azimuth) => {
+    const theta = ((azimuth - 90) * Math.PI) / 180;
     return {
       line: {
         start: {
           x: CENTER + RADIUS * (1 - 75 / 90) * Math.cos(theta),
-          y: CENTER + RADIUS * (1 - 75 / 90) * Math.sin(theta)
+          y: CENTER + RADIUS * (1 - 75 / 90) * Math.sin(theta),
         },
         end: {
           x: CENTER + RADIUS * (1 - 10 / 90) * Math.cos(theta),
-          y: CENTER + RADIUS * (1 - 10 / 90) * Math.sin(theta)
-        }
+          y: CENTER + RADIUS * (1 - 10 / 90) * Math.sin(theta),
+        },
       },
       text: {
         x: CENTER + RADIUS * Math.cos(theta),
-        y: CENTER + RADIUS * Math.sin(theta)
-      }
+        y: CENTER + RADIUS * Math.sin(theta),
+      },
     };
-  })
+  }),
 };
 
 // Memoized satellite position calculation
 const calculateSatellitePosition = (elevation: number, azimuth: number) => {
   const r = RADIUS * (1 - elevation / 90);
-  const theta = (azimuth - 90) * Math.PI / 180;
+  const theta = ((azimuth - 90) * Math.PI) / 180;
   return {
     x: CENTER + r * Math.cos(theta),
-    y: CENTER + r * Math.sin(theta)
+    y: CENTER + r * Math.sin(theta),
   };
 };
 
@@ -102,7 +104,7 @@ export const SatellitePlot = ({ data }: { data: ProcessedData }) => {
   const [hoveredSat, setHoveredSat] = useState<number | null>(null);
   const [visibilityFilter, setVisibilityFilter] = useState<VisibilityFilter>('in-use');
   const [enabledConstellations, setEnabledConstellations] = useState<Set<string>>(
-    new Set(Object.keys(CONSTELLATION_NAMES))
+    new Set(Object.keys(CONSTELLATION_NAMES)),
   );
 
   // Clean up event listeners on unmount
@@ -124,7 +126,7 @@ export const SatellitePlot = ({ data }: { data: ProcessedData }) => {
   }, []);
 
   const handleToggleConstellation = useCallback((constellationId: string) => {
-    setEnabledConstellations(prev => {
+    setEnabledConstellations((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(constellationId)) {
         newSet.delete(constellationId);
@@ -138,8 +140,8 @@ export const SatellitePlot = ({ data }: { data: ProcessedData }) => {
   // Memoize visible satellites computation
   const visibleSatellites = useMemo(() => {
     if (!data?.satellites?.visible) return [];
-    return data.satellites.visible.filter(sat => {
-      if (isNaN(sat.elevationDegrees) || isNaN(sat.azimuthTrue)) return false;
+    return data.satellites.visible.filter((sat) => {
+      if (Number.isNaN(sat.elevationDegrees) || Number.isNaN(sat.azimuthTrue)) return false;
       const constId = sat.constellation.substring(0, 2);
       const isEnabled = enabledConstellations.has(constId);
       const isInUse = data.satellites.inUse.includes(sat.prnNumber);
@@ -150,7 +152,7 @@ export const SatellitePlot = ({ data }: { data: ProcessedData }) => {
   // Memoize hover data
   const hoveredSatellite = useMemo(() => {
     if (!hoveredSat || !data?.satellites?.visible) return null;
-    return data.satellites.visible.find(sat => sat.prnNumber === hoveredSat) || null;
+    return data.satellites.visible.find((sat) => sat.prnNumber === hoveredSat) || null;
   }, [hoveredSat, data?.satellites?.visible]);
 
   return (
@@ -161,6 +163,7 @@ export const SatellitePlot = ({ data }: { data: ProcessedData }) => {
         <div className="mt-2">
           <div className="flex space-x-2">
             <button
+              type="button"
               onClick={useCallback(() => setVisibilityFilter('in-use'), [])}
               className={`px-2 py-1 text-sm rounded ${
                 visibilityFilter === 'in-use'
@@ -171,6 +174,7 @@ export const SatellitePlot = ({ data }: { data: ProcessedData }) => {
               In Use
             </button>
             <button
+              type="button"
               onClick={useCallback(() => setVisibilityFilter('all'), [])}
               className={`px-2 py-1 text-sm rounded ${
                 visibilityFilter === 'all'
@@ -183,11 +187,13 @@ export const SatellitePlot = ({ data }: { data: ProcessedData }) => {
           </div>
         </div>
       </div>
-      
+
       <div className="p-2">
         <svg
           viewBox={`0 0 ${VIEW_BOX_SIZE} ${VIEW_BOX_SIZE}`}
           className="w-full h-full"
+          role="img"
+          aria-label="Satellite polar plot showing satellite positions and signal strengths"
         >
           {ELEVATION_RINGS.map((elevation, i) => (
             <Fragment key={elevation}>
@@ -200,8 +206,8 @@ export const SatellitePlot = ({ data }: { data: ProcessedData }) => {
                 strokeWidth="1"
               />
               <text
-                x={STATIC_COORDINATES.elevationCoords[i].x + 5}
-                y={STATIC_COORDINATES.elevationCoords[i].y}
+                x={(STATIC_COORDINATES.elevationCoords[i]?.x ?? 0) + 5}
+                y={STATIC_COORDINATES.elevationCoords[i]?.y ?? 0}
                 className="text-xs fill-gray-400"
               >
                 {elevation}°
@@ -241,7 +247,12 @@ export const SatellitePlot = ({ data }: { data: ProcessedData }) => {
                 key={sat.prnNumber}
                 onMouseEnter={() => handleMouseEnter(sat.prnNumber)}
                 onMouseLeave={handleMouseLeave}
+                onFocus={() => handleMouseEnter(sat.prnNumber)}
+                onBlur={handleMouseLeave}
                 className="cursor-pointer"
+                role="button"
+                tabIndex={0}
+                aria-label={`Satellite PRN ${sat.prnNumber}, ${sat.constellation}, Elevation ${sat.elevationDegrees.toFixed(1)}°, Azimuth ${sat.azimuthTrue.toFixed(1)}°, SNR ${sat.SNRdB?.toFixed(1) || 'N/A'} dB`}
               >
                 <circle
                   cx={pos.x}
@@ -277,10 +288,10 @@ export const SatellitePlot = ({ data }: { data: ProcessedData }) => {
 
         {/* Signal strength legend */}
         <div className="absolute bottom-4 left-4 bg-white/0 p-0 rounded shadow-sm text-xs">
-        <div className="text-center text-sm">Signal</div>
+          <div className="text-center text-sm">Signal</div>
           {SIGNAL_LEGEND.map(({ label, color }) => (
             <div key={label} className="flex items-center">
-            <span style={{backgroundColor: color}} className="w-3 h-3 rounded-full mr-1" />
+              <span style={{ backgroundColor: color }} className="w-3 h-3 rounded-full mr-1" />
               {label}
             </div>
           ))}
@@ -289,15 +300,23 @@ export const SatellitePlot = ({ data }: { data: ProcessedData }) => {
         {/* Constellation legend w/toggles */}
         <div className="absolute bottom-4 right-4 bg-white/0 p-0 rounded shadow-sm text-xs">
           <div className="text-center text-sm">System</div>
-          {(Object.entries(CONSTELLATION_NAMES) as [keyof typeof CONSTELLATION_NAMES, string][]).map(([id, label]) => (
-            <label key={id} className="flex items-center cursor-pointer hover:bg-gray-50 p-0.5 rounded">
+          {(
+            Object.entries(CONSTELLATION_NAMES) as [keyof typeof CONSTELLATION_NAMES, string][]
+          ).map(([id, label]) => (
+            <label
+              key={id}
+              className="flex items-center cursor-pointer hover:bg-gray-50 p-0.5 rounded"
+            >
               <input
                 type="checkbox"
                 checked={enabledConstellations.has(id)}
                 onChange={() => handleToggleConstellation(id)}
                 className="mr-1"
               />
-              <span style={{backgroundColor: CONSTELLATION_COLORS[id]}} className="w-3 h-3 rounded-full mx-1" />
+              <span
+                style={{ backgroundColor: CONSTELLATION_COLORS[id] }}
+                className="w-3 h-3 rounded-full mx-1"
+              />
               {label}
             </label>
           ))}

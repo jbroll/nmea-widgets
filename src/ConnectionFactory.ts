@@ -1,39 +1,43 @@
-import { ConnectionInterface, ConnectionType } from './ConnectionInterface';
-import { SerialConnection } from './SerialConnection';
 import { BluetoothConnection } from './BluetoothConnection';
+import type { ConnectionInterface, ConnectionType } from './ConnectionInterface';
 import { GeoLocationConnection } from './GeoLocationConnection';
+import { SerialConnection } from './SerialConnection';
 
-export class ConnectionFactory {
-  private static connectionTypes: ConnectionType[] = [
-    {
-      id: SerialConnection.Id,
-      label: 'Serial Port',
-      constructor: SerialConnection,
-      isSupported: SerialConnection.supported
-    },
-    {
-      id: BluetoothConnection.Id,
-      label: 'Bluetooth',
-      constructor: BluetoothConnection,
-      isSupported: BluetoothConnection.supported
-    },
-    {
-      id: GeoLocationConnection.Id,
-      label: 'Browser Location',
-      constructor: GeoLocationConnection,
-      isSupported: GeoLocationConnection.supported
-    }
-  ];
+const connectionTypes: ConnectionType[] = [
+  {
+    id: SerialConnection.Id,
+    label: 'Serial Port',
+    constructor: SerialConnection,
+    isSupported: SerialConnection.supported,
+  },
+  {
+    id: BluetoothConnection.Id,
+    label: 'Bluetooth',
+    constructor: BluetoothConnection,
+    isSupported: BluetoothConnection.supported,
+  },
+  {
+    id: GeoLocationConnection.Id,
+    label: 'Browser Location',
+    constructor: GeoLocationConnection,
+    isSupported: GeoLocationConnection.supported,
+  },
+];
 
-  static createConnection(type: ConnectionType): ConnectionInterface {
-    if (!type.isSupported) {  
-      throw new Error(`Connection type not supported: ${type}`);
-    }
-
-    return new type.constructor();
+export function createConnection(type: ConnectionType): ConnectionInterface {
+  if (!type.isSupported) {
+    throw new Error(`Connection type not supported: ${type}`);
   }
 
-  static getConnectionTypes(): ConnectionType[] {
-    return this.connectionTypes;
-  }
+  return new type.constructor();
 }
+
+export function getConnectionTypes(): ConnectionType[] {
+  return connectionTypes;
+}
+
+// Export as object for backward compatibility if needed
+export const ConnectionFactory = {
+  createConnection,
+  getConnectionTypes,
+};

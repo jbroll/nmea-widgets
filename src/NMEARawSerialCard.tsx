@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ChevronDown, ChevronRight } from './ChevronIcons';
 import { CopyToClipboard } from './CopyToClipboard';
-import { DropdownMenu, MenuItem } from './DropdownMenu';
+import { DropdownMenu, type MenuItem } from './DropdownMenu';
 
 interface NMEARawSerialCardProps {
   serialData: string;
@@ -13,19 +13,19 @@ const initialFilterItems: MenuItem[] = [
     id: 'GGA',
     type: 'checkbox',
     label: 'GGA - Global Positioning Fix',
-    checked: true
+    checked: true,
   },
   {
     id: 'GST',
     type: 'checkbox',
     label: 'GST - Position Error Statistics',
-    checked: true
+    checked: true,
   },
   {
     id: 'GSA',
     type: 'checkbox',
     label: 'GSA - Active Satellites',
-    checked: true
+    checked: true,
   },
   {
     id: 'GSV',
@@ -36,47 +36,44 @@ const initialFilterItems: MenuItem[] = [
         id: 'GSV_GP',
         type: 'checkbox',
         label: 'GPS',
-        checked: true
+        checked: true,
       },
       {
         id: 'GSV_GL',
         type: 'checkbox',
         label: 'GLONASS',
-        checked: true
+        checked: true,
       },
       {
         id: 'GSV_GB',
         type: 'checkbox',
         label: 'Galileo',
-        checked: true
+        checked: true,
       },
       {
         id: 'GSV_BD',
         type: 'checkbox',
         label: 'BeiDou',
-        checked: true
-      }
-    ]
-  }
+        checked: true,
+      },
+    ],
+  },
 ];
 
-export const NMEARawSerialCard = ({ 
-  serialData, 
-  onFilterChange,
-}: NMEARawSerialCardProps) => {
+export const NMEARawSerialCard = ({ serialData, onFilterChange }: NMEARawSerialCardProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [filterItems, setFilterItems] = useState<MenuItem[]>(initialFilterItems);
   const getRawData = () => serialData;
 
   const updateFilterItem = (items: MenuItem[], itemId: string, checked: boolean): MenuItem[] => {
-    return items.map(item => {
+    return items.map((item) => {
       if (item.id === itemId) {
         return { ...item, checked };
       }
       if (item.children) {
         return {
           ...item,
-          children: updateFilterItem(item.children, itemId, checked)
+          children: updateFilterItem(item.children, itemId, checked),
         };
       }
       return item;
@@ -84,20 +81,19 @@ export const NMEARawSerialCard = ({
   };
 
   const handleFilterChange = (itemId: string, checked: boolean) => {
-    setFilterItems(prevItems => updateFilterItem(prevItems, itemId, checked));
+    setFilterItems((prevItems) => updateFilterItem(prevItems, itemId, checked));
     onFilterChange(itemId, checked);
   };
 
   return (
     <div className="border rounded-lg shadow-sm">
       <div className="p-2 flex items-center justify-between hover:bg-gray-50">
-        <button 
+        <button
+          type="button"
           onClick={() => setIsOpen(!isOpen)}
           className="flex items-center flex-grow text-left font-semibold"
         >
-          <span className="mr-2">
-            {isOpen ? <ChevronDown /> : <ChevronRight />}
-          </span>
+          <span className="mr-2">{isOpen ? <ChevronDown /> : <ChevronRight />}</span>
           Raw Serial Data
         </button>
         <div className="flex items-center">
@@ -108,10 +104,7 @@ export const NMEARawSerialCard = ({
             tooltip="Filter NMEA sentences"
             className="mr-2"
           />
-          <CopyToClipboard
-            getData={getRawData}
-            title="Copy raw data to clipboard"
-          />
+          <CopyToClipboard getData={getRawData} title="Copy raw data to clipboard" />
         </div>
       </div>
       {isOpen && (

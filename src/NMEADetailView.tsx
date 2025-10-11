@@ -1,5 +1,5 @@
-import { ProcessedData } from './nmea-types';
 import { NMEAInfo } from './NMEAInfo';
+import type { ProcessedData } from './nmea-types';
 import { SatellitePlot } from './SatellitePlot';
 
 export const NMEADetailView = ({ processedData }: { processedData: ProcessedData }) => {
@@ -16,4 +16,3 @@ export const NMEADetailView = ({ processedData }: { processedData: ProcessedData
     </div>
   );
 };
-

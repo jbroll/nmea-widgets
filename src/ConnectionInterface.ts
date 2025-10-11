@@ -15,6 +15,6 @@ export interface ConnectionInterface {
 }
 
 export interface ConnectionConstructor {
-  new(): ConnectionInterface;
+  new (): ConnectionInterface;
   supported: boolean;
 }

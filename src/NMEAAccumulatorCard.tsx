@@ -14,19 +14,15 @@ export const NMEAAccumulatorCard = ({ processedData }: NMEAAccumulatorCardProps)
   return (
     <div className="border rounded-lg shadow-sm">
       <div className="p-2 flex items-center justify-between hover:bg-gray-50">
-        <button 
+        <button
+          type="button"
           onClick={() => setIsOpen(!isOpen)}
           className="flex items-center flex-grow text-left font-semibold"
         >
-          <span className="mr-2">
-            {isOpen ? <ChevronDown /> : <ChevronRight />}
-          </span>
+          <span className="mr-2">{isOpen ? <ChevronDown /> : <ChevronRight />}</span>
           Accumulated NMEA Data
         </button>
-        <CopyToClipboard
-          getData={getProcessedData}
-          title="Copy processed data to clipboard"
-        />
+        <CopyToClipboard getData={getProcessedData} title="Copy processed data to clipboard" />
       </div>
       {isOpen && (
         <div className="p-2 border-t">

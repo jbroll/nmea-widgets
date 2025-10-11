@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
+    "target": "ES2022",
     "useDefineForClassFields": true,
     "module": "ESNext",
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
     "skipLibCheck": true,
 
     /* Build for distribution */
@@ -17,12 +17,20 @@
 
     /* Linting */
     "strict": true,
+    "exactOptionalPropertyTypes": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
 
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+
+    /* Path mapping to force using compiled .d.ts files */
+    "paths": {
+      "@jbroll/nmea-simple": ["./node_modules/@jbroll/nmea-simple/dist/index.d.ts"],
+      "@jbroll/nmea-simple/*": ["./node_modules/@jbroll/nmea-simple/dist/*"]
+    }
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "examples"]
+  "exclude": ["node_modules/**/*", "dist", "examples"]
 }

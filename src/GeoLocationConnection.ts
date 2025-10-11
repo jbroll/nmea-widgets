@@ -1,4 +1,4 @@
-import { ConnectionInterface } from './ConnectionInterface';
+import type { ConnectionInterface } from './ConnectionInterface';
 
 export class GeoLocationConnection implements ConnectionInterface {
   private watchId: number | null = null;
@@ -35,8 +35,8 @@ export class GeoLocationConnection implements ConnectionInterface {
         {
           enableHighAccuracy: true,
           maximumAge: 0,
-          timeout: 5000
-        }
+          timeout: 5000,
+        },
       );
     } catch (error) {
       await this.cleanup();
@@ -79,8 +79,8 @@ export class GeoLocationConnection implements ConnectionInterface {
     const lonStr = `${lonDeg.toString().padStart(3, '0')}${lonMin.toFixed(4)}`;
     const lonDir = lon >= 0 ? 'E' : 'W';
 
-    // Quality indicator: 
-    // 1 = GPS fix 
+    // Quality indicator:
+    // 1 = GPS fix
     // 2 = DGPS fix
     // We'll use accuracy to determine quality
     const quality = position.coords.accuracy < 10 ? '2' : '1';
@@ -88,7 +88,7 @@ export class GeoLocationConnection implements ConnectionInterface {
     const hdop = (position.coords.accuracy / 25).toFixed(1); // Approximate HDOP from accuracy
     const altitude = position.coords.altitude?.toFixed(1) || '0.0';
     const geoidHeight = '0.0';
-    
+
     const fields = [
       'GPGGA',
       time,
@@ -104,10 +104,10 @@ export class GeoLocationConnection implements ConnectionInterface {
       geoidHeight,
       'M', // Meters
       '', // Age of differential correction
-      '' // Differential reference station ID
+      '', // Differential reference station ID
     ];
 
-    const sentence = '$' + fields.join(',');
+    const sentence = `$${fields.join(',')}`;
     return `${sentence}*${this.calculateChecksum(sentence)}`;
   }
 
@@ -118,11 +118,14 @@ export class GeoLocationConnection implements ConnectionInterface {
     const seconds = date.getUTCSeconds().toString().padStart(2, '0');
     const time = `${hours}${minutes}${seconds}.${date.getUTCMilliseconds().toString().padStart(3, '0')}`;
 
-    let rms, latError, lonError, altError;
+    let rms: string;
+    let latError: string;
+    let lonError: string;
+    let altError: string;
 
     if (positionOrError instanceof GeolocationPositionError) {
       // Use error codes to set appropriate error values
-      switch(positionOrError.code) {
+      switch (positionOrError.code) {
         case GeolocationPositionError.PERMISSION_DENIED:
           rms = latError = lonError = altError = '999.999'; // Permission error
           break;
@@ -142,24 +145,24 @@ export class GeoLocationConnection implements ConnectionInterface {
       rms = baseError;
       latError = baseError;
       lonError = baseError;
-      altError = positionOrError.coords.altitudeAccuracy ? 
-        (positionOrError.coords.altitudeAccuracy / 2).toFixed(3) : 
-        baseError;
+      altError = positionOrError.coords.altitudeAccuracy
+        ? (positionOrError.coords.altitudeAccuracy / 2).toFixed(3)
+        : baseError;
     }
 
     const fields = [
       'GPGST',
       time,
-      rms,        // RMS value of the pseudorange residuals
-      latError,   // Error in latitude
-      lonError,   // Error in longitude
-      '0.000',    // Error in altitude
-      altError,   // Standard deviation of latitude error
-      altError,   // Standard deviation of longitude error
-      altError    // Standard deviation of altitude error
+      rms, // RMS value of the pseudorange residuals
+      latError, // Error in latitude
+      lonError, // Error in longitude
+      '0.000', // Error in altitude
+      altError, // Standard deviation of latitude error
+      altError, // Standard deviation of longitude error
+      altError, // Standard deviation of altitude error
     ];
 
-    const sentence = '$' + fields.join(',');
+    const sentence = `$${fields.join(',')}`;
     return `${sentence}*${this.calculateChecksum(sentence)}`;
   }
 
