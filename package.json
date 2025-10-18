@@ -1,6 +1,6 @@
 {
   "name": "@jbroll/nmea-widgets",
-  "version": "0.5.6",
+  "version": "0.6.0",
   "description": "Modern React/Preact components for visualizing NMEA GPS data in real-time using Web Serial API",
   "type": "module",
   "main": "dist/index.js",
